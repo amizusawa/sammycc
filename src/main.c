@@ -3,6 +3,9 @@
 #include "data.h"
 #undef EXTERN_
 #include "scan.h"
+#include "ast.h"
+#include "expr.h"
+#include "utils.h"
 #include <errno.h>
 
 void init_scanner() {
@@ -11,19 +14,6 @@ void init_scanner() {
 }
 
 char *tokstr[] = { "+", "-", "*", "/", "intlit" };
-
-void scan_file() {
-    struct token t;
-
-    while (scan(&t)) {
-        if (t.token == TOK_INTLIT) {
-            printf("Token int literal: %d\n", t.intvalue);
-        }
-        else {
-            printf("Token read. %s\n", tokstr[t.token]);
-        }
-    }
-}
 
 int main(int argc, char** argv) {
 
@@ -35,7 +25,9 @@ int main(int argc, char** argv) {
         exit(EXIT_FAILURE);
     }
 
-    scan_file();
+    scan(&current_token);
+    struct ASTnode* n = bin_expr();
+    dump_ast(stdout, n);
 
     return EXIT_SUCCESS;
 }
