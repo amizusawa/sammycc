@@ -10,7 +10,6 @@
 
 void init_scanner() {
     line = 1;
-    putback = 0;
 }
 
 char *tokstr[] = { "+", "-", "*", "/", "intlit" };

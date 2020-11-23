@@ -5,12 +5,6 @@
 static int next() {
     int c;
 
-    if (putback) {
-        c = putback;
-        putback = 0;
-        return c;
-    }
-
     c = fgetc(in_file);
     if (c == '\n') {
         line++;
@@ -22,7 +16,7 @@ static int skip() {
     int c; 
 
     c = next();
-    if (c == ' ' || c == '\t' || c == '\n' || c == '\r' || c == '\f') {
+    while (c == ' ' || c == '\t' || c == '\n' || c == '\r' || c == '\f') {
         c = next();
     }
 
