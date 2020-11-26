@@ -25,7 +25,7 @@ int main(int argc, char** argv) {
     }
 
     scan(&current_token);
-    struct ASTnode* n = bin_expr();
+    struct ASTnode* n = bin_expr(0);
     dump_ast(stdout, n);
 
     return EXIT_SUCCESS;

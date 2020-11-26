@@ -1,5 +1,18 @@
 #include "expr.h"
 
+static int precedence[] = {10, 10, 20, 20, 0,   0};
+                        /* +,  -,  *,  /,  EOF, INTLIT*/
+
+static int op_precedence(int tokentype) {
+    int prec = precedence[tokentype];
+    if (prec == 0) {
+        fprintf(stderr, "Syntax error on line %d\n, token %d\n", line, tokentype);
+        exit(EXIT_FAILURE);
+    }
+
+    return prec;
+}
+
 int arith_op(int token) {
     switch (token) {
         case TOK_PLUS: {
@@ -37,19 +50,24 @@ static struct ASTnode* make_int_lit() {
     }
 }
 
-struct ASTnode* bin_expr() {
-    struct ASTnode *n, *left, *right;
+struct ASTnode* bin_expr(int prev_prec) {
+    struct ASTnode *left, *right;
 
     left = make_int_lit();
 
-    if (current_token.token == TOK_EOF) {
+    int tokentype = current_token.token;
+    if (tokentype == TOK_EOF) {
         return left;
     }
 
-    int nodetype = arith_op(current_token.token);
-    scan(&current_token);
-    right = bin_expr();
-    n = make_node(nodetype, left, right, 0);
-
-    return n;
+    while(op_precedence(tokentype) > prev_prec) {
+        scan(&current_token);
+        right = bin_expr(precedence[tokentype]);
+        left = make_node(arith_op(tokentype), left, right, 0);
+        tokentype = current_token.token;
+        if (tokentype == TOK_EOF) {
+            return left;
+        }
+    }
+    return left;
 }
