@@ -5,14 +5,13 @@
 #include "scan.h"
 #include "ast.h"
 #include "expr.h"
+#include "codegen.h"
 #include "utils.h"
 #include <errno.h>
 
 void init_scanner() {
     line = 1;
 }
-
-char *tokstr[] = { "+", "-", "*", "/", "intlit" };
 
 int main(int argc, char** argv) {
 
@@ -24,9 +23,19 @@ int main(int argc, char** argv) {
         exit(EXIT_FAILURE);
     }
 
+    out_file = fopen("out.s", "w");
+    if (!out_file) {
+        fprintf(stderr, "Failed to open output file.\n");
+        exit(EXIT_FAILURE);
+    }
+
     scan(&current_token);
     struct ASTnode* n = bin_expr(0);
     dump_ast(stdout, n);
+    generate_code(n);
+
+    fclose(in_file);
+    fclose(out_file);
 
     return EXIT_SUCCESS;
 }
