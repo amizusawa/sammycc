@@ -103,7 +103,7 @@ int gen_div(int reg1, int reg2) {
 }
 
 void printint(int reg) {
-    fprintf(out_file, "\tmovq\t%s. %%rdi\n", regs[reg]);
+    fprintf(out_file, "\tmovq\t%s, %%rdi\n", regs[reg]);
     fprintf(out_file, "\tcall\tprintint\n");
     free_register(reg);
 }

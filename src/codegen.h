@@ -5,5 +5,10 @@
 #include <stdio.h>
 
 void generate_code(struct ASTnode* n);
+void generate_preamble();
+void generate_postamble();
+void generate_freeregs();
+void generate_printint(int reg);
+int generate_asm(struct ASTnode* n);
 
 #endif

@@ -6,7 +6,7 @@ static int precedence[] = {10, 10, 20, 20, 0,   0};
 static int op_precedence(int tokentype) {
     int prec = precedence[tokentype];
     if (prec == 0) {
-        fprintf(stderr, "Syntax error on line %d\n, token %d\n", line, tokentype);
+        fprintf(stderr, "Syntax error on line %d, token %d\n", line, tokentype);
         exit(EXIT_FAILURE);
     }
 
@@ -56,7 +56,7 @@ struct ASTnode* bin_expr(int prev_prec) {
     left = make_int_lit();
 
     int tokentype = current_token.token;
-    if (tokentype == TOK_EOF) {
+    if (tokentype == TOK_SEMICOLON) {
         return left;
     }
 
@@ -65,7 +65,7 @@ struct ASTnode* bin_expr(int prev_prec) {
         right = bin_expr(precedence[tokentype]);
         left = make_node(arith_op(tokentype), left, right, 0);
         tokentype = current_token.token;
-        if (tokentype == TOK_EOF) {
+        if (tokentype == TOK_SEMICOLON) {
             return left;
         }
     }

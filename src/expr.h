@@ -7,6 +7,6 @@
 #include <stdio.h>
 #include "ast.h"
 
-struct ASTnode* bin_expr();
+struct ASTnode* bin_expr(int prev_prec);
 
 #endif

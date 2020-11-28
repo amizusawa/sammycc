@@ -13,7 +13,9 @@ enum {
     TOK_STAR,
     TOK_SLASH,
     TOK_INTLIT,
-    TOK_EOF
+    TOK_EOF,
+    TOK_SEMICOLON,
+    TOK_PRINT
 };
 
 enum {

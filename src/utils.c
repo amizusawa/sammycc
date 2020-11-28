@@ -46,3 +46,18 @@ void dump_ast_recursive(FILE* stream, struct ASTnode* node, int num_indents) {
 void dump_ast(FILE* stream, struct ASTnode* node) {
     dump_ast_recursive(stream, node, 0);
 }
+
+void match(int token, char* what) {
+    
+    if (current_token.token == token) {
+        scan(&current_token);
+    }
+    else {
+        fprintf(stderr, "%s expected on line %d.\n", what, line);
+        exit(EXIT_FAILURE);
+    }
+}
+
+void semi() {
+    match(TOK_SEMICOLON, ";");
+}

@@ -23,6 +23,23 @@ static int skip() {
     return c;
 }
 
+static int scanident(int c, char* buf, int lim) {
+    int i = 0;
+
+    while (isalpha(c) || isdigit(c) || c == '_') {
+        if (i == lim - 1) {
+            fprintf(stderr, "Error: identifier on line %d too long.", line);
+            exit(EXIT_FAILURE);
+        }
+        buf[i++] = c;
+        c = next();
+    }
+
+    ungetc(c, in_file);
+    buf[i] = '\0';
+    return i;
+}
+
 static int char_to_int(int c) {
 
     if (c >= '0' && c <= '9') {
@@ -45,8 +62,20 @@ static int scanint(int c) {
     return val;
 }
 
+static int keyword(char* s) {
+    switch (*s) {
+        case 'p': {
+            if (!strcmp(s, "print")) {
+                return TOK_PRINT;
+            }
+            break;
+        }
+    }
+    return 0;
+}
+
 int scan(struct token* t) {
-    int c;
+    int c, tokentype;
 
     c = skip();
 
@@ -71,13 +100,33 @@ int scan(struct token* t) {
             t->token = TOK_SLASH;
             break;
         }
+        case ';': {
+            t->token = TOK_SEMICOLON;
+            break;
+        }
         default:
             if (isdigit(c)) {
                 t->intvalue = scanint(c);
                 t->token = TOK_INTLIT;
                 break;
             }
-            printf("Error: unrecognized character %c on line %d.\n", c, line);
+            else if (isalpha(c) || c == '_') {
+                scanident(c, ident_buffer, MAX_TEXTLEN);
+                
+                if ((tokentype = keyword(ident_buffer))) {
+                    t->token = tokentype;
+                    break;
+                }
+                else {
+                    fprintf(stderr, 
+                            "Unrecognized symbol %s on line %d.\n", 
+                            ident_buffer, line);
+
+                    exit(EXIT_FAILURE);
+                }
+                
+            }
+            fprintf(stderr, "Error: unrecognized character %c on line %d.\n", c, line);
             exit(EXIT_FAILURE);
     }
 

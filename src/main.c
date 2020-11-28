@@ -6,6 +6,7 @@
 #include "ast.h"
 #include "expr.h"
 #include "codegen.h"
+#include "stmt.h"
 #include "utils.h"
 #include <errno.h>
 
@@ -30,9 +31,9 @@ int main(int argc, char** argv) {
     }
 
     scan(&current_token);
-    struct ASTnode* n = bin_expr(0);
-    dump_ast(stdout, n);
-    generate_code(n);
+    generate_preamble();
+    statements();
+    generate_postamble();
 
     fclose(in_file);
     fclose(out_file);

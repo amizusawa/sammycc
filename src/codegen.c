@@ -1,10 +1,10 @@
 #include "codegen.h"
 #include "gen_x86.h"
 
-static int gen_asm(struct ASTnode* n) {
+int generate_asm(struct ASTnode* n) {
     int leftreg, rightreg;
-    if (n->left) leftreg = gen_asm(n->left);
-    if (n->right) rightreg = gen_asm(n->right);
+    if (n->left) leftreg = generate_asm(n->left);
+    if (n->right) rightreg = generate_asm(n->right);
 
     switch(n->op) {
         case A_ADD: {
@@ -29,10 +29,28 @@ static int gen_asm(struct ASTnode* n) {
     }
 }
 
+/*
 void generate_code(struct ASTnode* n) {
     int reg;
     gen_preamble();
     reg = gen_asm(n);
     printint(reg);
     gen_postamble();
+}
+*/
+
+void generate_preamble() {
+    gen_preamble();
+}
+
+void generate_postamble() {
+    gen_postamble();
+}
+
+void generate_freeregs() {
+    freeall_registers();
+}
+
+void generate_printint(int reg) {
+    printint(reg);
 }

@@ -6,5 +6,7 @@
 #include <stdio.h>
 
 void dump_ast(FILE* stream, struct ASTnode* node);
+void match(int token, char* what);
+void semi();
 
 #endif
