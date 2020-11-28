@@ -1,5 +1,7 @@
-print 12*3;
-print 
-    12 - 3  * 4; print 
-    1 + 2 
-+ 9 / 5 * 3;
+int a;
+int b;
+a = 6;
+b = 7;
+print a+b;
+
+print c;

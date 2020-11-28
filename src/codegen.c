@@ -1,10 +1,10 @@
 #include "codegen.h"
 #include "gen_x86.h"
 
-int generate_asm(struct ASTnode* n) {
+int generate_asm(struct ASTnode* n, int reg) {
     int leftreg, rightreg;
-    if (n->left) leftreg = generate_asm(n->left);
-    if (n->right) rightreg = generate_asm(n->right);
+    if (n->left) leftreg = generate_asm(n->left, -1);
+    if (n->right) rightreg = generate_asm(n->right, leftreg);
 
     switch(n->op) {
         case A_ADD: {
@@ -20,7 +20,16 @@ int generate_asm(struct ASTnode* n) {
             return gen_div(leftreg, rightreg);
         }
         case A_INTLIT: {
-            return gen_load(n->intvalue);
+            return gen_load_int(n->v.intvalue);
+        }
+        case A_IDENT: {
+            return gen_load_global_sym(global_sym[n->v.id].name);
+        }
+        case A_LVIDENT: {
+            return gen_store_global_sym(reg, global_sym[n->v.id].name);
+        }
+        case A_ASSIGN: {
+            return rightreg;
         }
         default: {
             fprintf(stderr, "Unknown AST operator %d\n", n->op);
@@ -53,4 +62,8 @@ void generate_freeregs() {
 
 void generate_printint(int reg) {
     printint(reg);
+}
+
+void generate_global_sym(char* sym) {
+    gen_global_sym(sym);
 }

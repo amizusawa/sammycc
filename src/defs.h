@@ -15,7 +15,10 @@ enum {
     TOK_INTLIT,
     TOK_EOF,
     TOK_SEMICOLON,
-    TOK_PRINT
+    TOK_PRINT,
+    TOK_EQUALS,
+    TOK_INT,
+    TOK_IDENT
 };
 
 enum {
@@ -23,14 +26,24 @@ enum {
     A_SUBTRACT,
     A_MULTIPLY,
     A_DIVIDE,
-    A_INTLIT
+    A_INTLIT,
+    A_IDENT,
+    A_LVIDENT,
+    A_ASSIGN
 };
 
 struct ASTnode {
     int op;
     struct ASTnode* left;
     struct ASTnode* right;
-    int intvalue;
+    union {
+        int intvalue;
+        int id;
+    } v;
+};
+
+struct symtable {
+    char* name;
 };
 
 #endif

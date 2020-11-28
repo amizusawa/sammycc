@@ -6,6 +6,7 @@
 #include "data.h"
 #include <stdio.h>
 #include "ast.h"
+#include "sym.h"
 
 struct ASTnode* bin_expr(int prev_prec);
 

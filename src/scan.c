@@ -70,6 +70,12 @@ static int keyword(char* s) {
             }
             break;
         }
+        case 'i': {
+            if (!strcmp(s, "int")) {
+                return TOK_INT;
+            }
+            break;
+        }
     }
     return 0;
 }
@@ -104,6 +110,10 @@ int scan(struct token* t) {
             t->token = TOK_SEMICOLON;
             break;
         }
+        case '=': {
+            t->token = TOK_EQUALS;
+            break;
+        }
         default:
             if (isdigit(c)) {
                 t->intvalue = scanint(c);
@@ -118,11 +128,8 @@ int scan(struct token* t) {
                     break;
                 }
                 else {
-                    fprintf(stderr, 
-                            "Unrecognized symbol %s on line %d.\n", 
-                            ident_buffer, line);
-
-                    exit(EXIT_FAILURE);
+                    t->token = TOK_IDENT;
+                    break;
                 }
                 
             }

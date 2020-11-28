@@ -26,7 +26,7 @@ void dump_ast_recursive(FILE* stream, struct ASTnode* node, int num_indents) {
             break;
         }
         case A_INTLIT: {
-            fprintf(stream, "INTLIT:%d\n", node->intvalue);
+            fprintf(stream, "INTLIT:%d\n", node->v.intvalue);
             break;
         }
         default: {
@@ -60,4 +60,8 @@ void match(int token, char* what) {
 
 void semi() {
     match(TOK_SEMICOLON, ";");
+}
+
+void ident() {
+    match(TOK_IDENT, "identifier");
 }

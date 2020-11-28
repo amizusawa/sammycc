@@ -65,7 +65,7 @@ void gen_postamble()
     out_file);
 }
 
-int gen_load(int value) {
+int gen_load_int(int value) {
     int r = alloc_register();
 
     fprintf(out_file, "\tmovq\t$%d, %s\n", value, regs[r]);
@@ -106,4 +106,20 @@ void printint(int reg) {
     fprintf(out_file, "\tmovq\t%s, %%rdi\n", regs[reg]);
     fprintf(out_file, "\tcall\tprintint\n");
     free_register(reg);
+}
+
+int gen_load_global_sym(char* identifier) {
+    int r = alloc_register();
+
+    fprintf(out_file, "\tmovq\t%s(\%%rip), \%s\n", identifier, regs[r]);
+    return r;
+}
+
+int gen_store_global_sym(int r, char* identifier) {
+    fprintf(out_file, "\tmovq\t%s,%s(\%%rip)\n", regs[r], identifier);
+    return r;
+}
+
+void gen_global_sym(char* sym) {
+    fprintf(out_file, "\t.comm\t%s,8,8\n", sym);
 }

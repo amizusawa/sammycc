@@ -34,26 +34,39 @@ int arith_op(int token) {
     }
 }
 
-static struct ASTnode* make_int_lit() {
+static struct ASTnode* primary() {
     struct ASTnode* n;
+    int id;
 
     switch (current_token.token) {
         case TOK_INTLIT: {
             n = make_leaf(A_INTLIT, current_token.intvalue);
-            scan(&current_token);
-            return n;
+            break;
+        }
+        case TOK_IDENT: {
+            id = find_global_sym(ident_buffer);
+            if (id == -1) {
+                fprintf(stderr, "Unknown variable %s.\n", ident_buffer);
+                exit(EXIT_FAILURE);
+            }
+
+            n = make_leaf(A_IDENT, id);
+            break;
         }
         default: {
             fprintf(stderr, "Syntax error on line %d\n.", line);
             exit(EXIT_FAILURE);
         }
     }
+
+    scan(&current_token);
+    return n;
 }
 
 struct ASTnode* bin_expr(int prev_prec) {
     struct ASTnode *left, *right;
 
-    left = make_int_lit();
+    left = primary();
 
     int tokentype = current_token.token;
     if (tokentype == TOK_SEMICOLON) {

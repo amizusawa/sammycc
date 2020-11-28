@@ -9,6 +9,7 @@ void generate_preamble();
 void generate_postamble();
 void generate_freeregs();
 void generate_printint(int reg);
-int generate_asm(struct ASTnode* n);
+int generate_asm(struct ASTnode* n, int reg);
+void generate_global_sym(char* sym);
 
 #endif
