@@ -8,17 +8,30 @@ struct token {
 };
 
 enum {
+    // Operators
     TOK_PLUS,
     TOK_MINUS,
     TOK_STAR,
     TOK_SLASH,
-    TOK_INTLIT,
+    TOK_EQ,
+    TOK_LT,
+    TOK_GT,
+    TOK_LE,
+    TOK_GE,
+    TOK_NE,
+
+    // Special characters
     TOK_EOF,
     TOK_SEMICOLON,
-    TOK_PRINT,
     TOK_EQUALS,
+
+    // Keywords
+    TOK_PRINT,
     TOK_INT,
-    TOK_IDENT
+
+    // Identifiers
+    TOK_IDENT,
+    TOK_INTLIT
 };
 
 enum {
@@ -26,6 +39,12 @@ enum {
     A_SUBTRACT,
     A_MULTIPLY,
     A_DIVIDE,
+    A_EQ,
+    A_LT,
+    A_GT,
+    A_LE,
+    A_GE,
+    A_NE,
     A_INTLIT,
     A_IDENT,
     A_LVIDENT,

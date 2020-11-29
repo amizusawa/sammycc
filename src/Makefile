@@ -18,4 +18,5 @@ $(BIN): $(C_OBJS)
 clean:
 	rm -f *.o
 	rm -f *.s
+	rm -f out
 	rm -f $(BIN)

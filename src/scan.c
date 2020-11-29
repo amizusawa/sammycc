@@ -111,7 +111,43 @@ int scan(struct token* t) {
             break;
         }
         case '=': {
-            t->token = TOK_EQUALS;
+            if ((c = next()) == '=') {
+                t->token = TOK_EQ;
+            }
+            else {
+                ungetc(c, in_file);
+                t->token = TOK_EQUALS;
+            }
+            break;
+        }
+        case '<': {
+            if ((c = next()) == '=') {
+                t->token = TOK_LE;
+            }
+            else {
+                ungetc(c, in_file);
+                t->token = TOK_LT;
+            }
+            break;
+        }
+        case '>': {
+            if ((c = next()) == '=') {
+                t->token = TOK_GE;
+            }
+            else {
+                ungetc(c, in_file);
+                t->token = TOK_GT;
+            }
+            break;
+        }
+        case '!': {
+            if ((c = next()) == '=') {
+                t->token = TOK_NE;
+            }
+            else {
+                fprintf(stderr, "Unrecognized character %c on line %d.\n", c, line);
+                exit(EXIT_FAILURE);
+            }
             break;
         }
         default:

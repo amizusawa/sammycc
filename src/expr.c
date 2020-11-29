@@ -1,7 +1,16 @@
 #include "expr.h"
 
-static int precedence[] = {10, 10, 20, 20, 0,   0};
-                        /* +,  -,  *,  /,  EOF, INTLIT*/
+static int precedence[] = {10, // +
+                           10, // -
+                           20, // *
+                           20, // /
+                           30, // ==
+                           40, // <
+                           40, // >
+                           40, // <=
+                           40, // >=
+                           30, // !=
+                           0};  // EOF
 
 static int op_precedence(int tokentype) {
     int prec = precedence[tokentype];
@@ -26,6 +35,24 @@ int arith_op(int token) {
         }
         case TOK_SLASH: {
             return A_DIVIDE;
+        }
+        case TOK_EQ: {
+            return A_EQ;
+        }
+        case TOK_LT: {
+            return A_LT;
+        }
+        case TOK_GT: {
+            return A_GT;
+        }
+        case TOK_LE: {
+            return A_LE;
+        }
+        case TOK_GE: {
+            return A_GE;
+        }
+        case TOK_NE: {
+            return A_NE;
         }
         default: {
             fprintf(stderr, "Unknown arithmetic operation on line %d.\n", line);

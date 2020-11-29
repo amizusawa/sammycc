@@ -4,6 +4,7 @@
 
 static int free_regs[NUM_REGS];
 static char* regs[NUM_REGS] = {"%r8", "%r9", "%r10", "%r11"};
+static char* b_regs[NUM_REGS] = {"%r8b", "%r9b", "%r10b", "%r11b"};
 
 void freeall_registers() {
     free_regs[0] = free_regs[1] = free_regs[2] = free_regs[3] = 1;
@@ -123,3 +124,19 @@ int gen_store_global_sym(int r, char* identifier) {
 void gen_global_sym(char* sym) {
     fprintf(out_file, "\t.comm\t%s,8,8\n", sym);
 }
+
+static int gen_compare(int reg1, int reg2, char* how) {
+    fprintf(out_file, "\tcmpq\t%s, %s\n", regs[reg2], regs[reg1]);
+    fprintf(out_file, "\t%s\t%s\n", how, b_regs[reg2]);
+    fprintf(out_file, "\tandq\t$255,%s\n", regs[reg2]);
+    free_register(reg1);
+    return reg2;
+}
+
+int gen_eq(int reg1, int reg2) { return gen_compare(reg1, reg2, "sete"); }
+int gen_less(int reg1, int reg2) { return gen_compare(reg1, reg2, "setl"); }
+int gen_greater(int reg1, int reg2) { return gen_compare(reg1, reg2, "setg"); }
+int gen_less_eq(int reg1, int reg2) { return gen_compare(reg1, reg2, "setle"); }
+int gen_greater_eq(int reg1, int reg2) { return gen_compare(reg1, reg2, "setge"); }
+int gen_not_eq(int reg1, int reg2) { return gen_compare(reg1, reg2, "setne"); }
+

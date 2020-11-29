@@ -1,7 +1,10 @@
-int a;
-int b;
-a = 6;
-b = 7;
-print a+b;
-
-print c;
+int x;
+x= 7 < 9;  print x;
+x= 7 <= 9; print x;
+x= 7 != 9; print x;
+x= 7 == 7; print x;
+x= 7 >= 7; print x;
+x= 7 <= 7; print x;
+x= 9 > 7;  print x;
+x= 9 >= 7; print x;
+x= 9 != 7; print x;

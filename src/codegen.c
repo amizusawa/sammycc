@@ -28,6 +28,24 @@ int generate_asm(struct ASTnode* n, int reg) {
         case A_LVIDENT: {
             return gen_store_global_sym(reg, global_sym[n->v.id].name);
         }
+        case A_EQ: {
+            return gen_eq(leftreg, rightreg);
+        }
+        case A_LT: {
+            return gen_less(leftreg, rightreg);
+        }
+        case A_GT: {
+            return gen_greater(leftreg, rightreg);
+        }
+        case A_LE: {
+            return gen_less_eq(leftreg, rightreg);
+        }
+        case A_GE: {
+            return gen_greater_eq(leftreg, rightreg);
+        }
+        case A_NE: {
+            return gen_not_eq(leftreg, rightreg);
+        }
         case A_ASSIGN: {
             return rightreg;
         }
