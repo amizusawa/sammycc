@@ -22,7 +22,7 @@ static int alloc_register() {
 }
 
 static void free_register(int reg) {
-    if (free_regs[reg] == 1) {
+    if (free_regs[reg] != 0) {
         fprintf(stderr, "Error: freeing non-allocated register. \n");
         exit(EXIT_FAILURE);
     }
@@ -140,3 +140,41 @@ int gen_less_eq(int reg1, int reg2) { return gen_compare(reg1, reg2, "setle"); }
 int gen_greater_eq(int reg1, int reg2) { return gen_compare(reg1, reg2, "setge"); }
 int gen_not_eq(int reg1, int reg2) { return gen_compare(reg1, reg2, "setne"); }
 
+//                      A_EQ    A_LT    A_GT    A_LE     A_GE     A_NE
+char* cmp_list[] =     {"sete", "setl", "setg", "setle", "setge", "setne"};
+char* inv_cmp_list[] = {"jne",  "jge",  "jle",  "jgt",   "jlt",   "je"};
+
+int gen_compare_and_set(int op, int reg1, int reg2) {
+    if (op < A_EQ || op > A_NE) {
+        fprintf(stderr, "Bad operator on line %d.\n", line);
+        exit(EXIT_FAILURE);
+    }
+
+    fprintf(out_file, "\tcmpq\t%s, %s\n", regs[reg2], regs[reg1]);
+    fprintf(out_file, "\t%s\t%s\n", cmp_list[op - A_EQ], b_regs[reg2]);
+    fprintf(out_file, "\tmovzbq\t%s, %s\n", b_regs[reg2], regs[reg2]);
+
+    free_register(reg1);
+    return reg2;
+}
+
+void gen_label(int label) {
+    fprintf(out_file, "L%d:\n", label);
+}
+
+void gen_jump(int label) {
+    fprintf(out_file, "\tjmp\tL%d\n", label);
+}
+
+int gen_compare_and_jump(int op, int reg1, int reg2, int label) {
+    if (op < A_EQ || op > A_NE) {
+        fprintf(stderr, "Bad operator on line %d.\n", line);
+        exit(EXIT_FAILURE);
+    }
+
+    fprintf(out_file, "\tcmpq\t%s, %s\n", regs[reg2], regs[reg1]);
+    fprintf(out_file, "\t%s\tL%d\n", inv_cmp_list[op - A_EQ], label);
+    freeall_registers();
+
+    return NOREG;
+}

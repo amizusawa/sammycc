@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-struct ASTnode* make_node(int op, struct ASTnode* left, 
+struct ASTnode* make_node(int op, struct ASTnode* left, struct ASTnode* mid, 
                          struct ASTnode* right, int intvalue) {
     struct ASTnode* n;
     
@@ -14,15 +14,16 @@ struct ASTnode* make_node(int op, struct ASTnode* left,
 
     n->op = op;
     n->left = left;
+    n->mid = mid;
     n->right = right;
     n->v.intvalue = intvalue;
     return n;
 }
 
 struct ASTnode* make_leaf(int op, int intvalue) {
-    return make_node(op, NULL, NULL, intvalue);
+    return make_node(op, NULL, NULL, NULL, intvalue);
 }
 
 struct ASTnode* make_unary(int op, struct ASTnode* left, int intvalue) {
-    return make_node(op, left, NULL, intvalue);
+    return make_node(op, left, NULL, NULL, intvalue);
 }

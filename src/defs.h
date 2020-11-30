@@ -24,10 +24,16 @@ enum {
     TOK_EOF,
     TOK_SEMICOLON,
     TOK_EQUALS,
+    TOK_LBRACE,
+    TOK_RBRACE,
+    TOK_LPAREN,
+    TOK_RPAREN,
 
     // Keywords
     TOK_PRINT,
     TOK_INT,
+    TOK_IF,
+    TOK_ELSE,
 
     // Identifiers
     TOK_IDENT,
@@ -48,12 +54,16 @@ enum {
     A_INTLIT,
     A_IDENT,
     A_LVIDENT,
-    A_ASSIGN
+    A_ASSIGN,
+    A_GLUE,
+    A_IF,
+    A_PRINT
 };
 
 struct ASTnode {
     int op;
     struct ASTnode* left;
+    struct ASTnode* mid;
     struct ASTnode* right;
     union {
         int intvalue;

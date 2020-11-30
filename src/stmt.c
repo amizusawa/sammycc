@@ -1,20 +1,20 @@
 #include "stmt.h"
 
-void print_statement() {
+struct ASTnode* compound_statement();
+
+struct ASTnode* print_statement() {
     struct ASTnode* tree;
-    int reg;
 
     match(TOK_PRINT, "print");
 
     tree = bin_expr(0);
-    reg = generate_asm(tree, -1);
-    generate_printint(reg);
-    generate_freeregs();
+    tree = make_unary(A_PRINT, tree, 0);
 
     semi();
+    return tree;
 }
 
-void assignment_statement() {
+struct ASTnode* assignment_statement() {
     struct ASTnode *left, *right, *tree;
     int id;
 
@@ -30,37 +30,83 @@ void assignment_statement() {
     right = make_leaf(A_LVIDENT, id);
     match(TOK_EQUALS, "=");
     left = bin_expr(0);
-    tree = make_node(A_ASSIGN, left, right, 0);
-    generate_asm(tree, -1);
-    generate_freeregs();
+    tree = make_node(A_ASSIGN, left, NULL, right, 0);
 
     semi();
+
+    return tree;
 }
 
-void statements() {
-    
+struct ASTnode* if_statement() {
+    struct ASTnode *cond_ast, *true_ast, *false_ast = NULL;
+
+    match(TOK_IF, "if");
+    l_paren();
+
+    cond_ast = bin_expr(0);
+
+    if (cond_ast->op < A_EQ || cond_ast->op > A_NE) {
+        fprintf(stderr, "Bad comparison operator on line %d.\n", line);
+        exit(EXIT_FAILURE);
+    }
+
+    r_paren();
+
+    true_ast = compound_statement();
+
+    if (current_token.token == TOK_ELSE) {
+        scan(&current_token);
+        false_ast = compound_statement();
+    }
+
+    return make_node(A_IF, cond_ast, true_ast, false_ast, 0);
+}
+
+struct ASTnode* compound_statement() {
+   
+    struct ASTnode* left = NULL;
+    struct ASTnode* tree;
+
+    l_brace();
+
     while (1) {
         switch(current_token.token) {
             case TOK_PRINT: {
-                print_statement();
+                tree = print_statement();
                 break;
             }
             case TOK_INT: {
                 var_declaration();
+                tree = NULL;
                 break;
             }
             case TOK_IDENT: {
-                assignment_statement();
+                tree = assignment_statement();
                 break;
             }
-            case TOK_EOF: {
-                return;
+            case TOK_IF: {
+                tree = if_statement();
+                break;
+            }
+            case TOK_RBRACE: {
+                r_brace();
+                return left;
             }
             default: {
                 fprintf(stderr, 
                         "Syntax error %d, on line %d.\n", 
                         current_token.token, line);
                 exit(EXIT_FAILURE);
+            }
+        }
+    
+
+        if (tree) {
+            if (left == NULL) {
+                left = tree;
+            }
+            else {
+                left = make_node(A_GLUE, left, NULL, tree, 0);
             }
         }
     }

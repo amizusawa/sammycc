@@ -81,7 +81,7 @@ static struct ASTnode* primary() {
             break;
         }
         default: {
-            fprintf(stderr, "Syntax error on line %d\n.", line);
+            fprintf(stderr, "Syntax error on line %d\n", line);
             exit(EXIT_FAILURE);
         }
     }
@@ -96,16 +96,16 @@ struct ASTnode* bin_expr(int prev_prec) {
     left = primary();
 
     int tokentype = current_token.token;
-    if (tokentype == TOK_SEMICOLON) {
+    if (tokentype == TOK_SEMICOLON || tokentype == TOK_RPAREN) {
         return left;
     }
 
     while(op_precedence(tokentype) > prev_prec) {
         scan(&current_token);
         right = bin_expr(precedence[tokentype]);
-        left = make_node(arith_op(tokentype), left, right, 0);
+        left = make_node(arith_op(tokentype), left, NULL, right, 0);
         tokentype = current_token.token;
-        if (tokentype == TOK_SEMICOLON) {
+        if (tokentype == TOK_SEMICOLON || tokentype == TOK_RPAREN) {
             return left;
         }
     }

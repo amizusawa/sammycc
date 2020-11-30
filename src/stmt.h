@@ -12,6 +12,6 @@
 #include "decl.h"
 #include <stdio.h>
 
-void statements();
+struct ASTnode* compound_statement();
 
 #endif

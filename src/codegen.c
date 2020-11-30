@@ -1,10 +1,54 @@
 #include "codegen.h"
 #include "gen_x86.h"
 
-int generate_asm(struct ASTnode* n, int reg) {
+static int label() {
+    static int id = 1;
+    return (id++);
+}
+
+int generate_if(struct ASTnode* n) {
+    int false_label, end_label;
+
+    false_label = label();
+    if (n->right) end_label = label();
+
+    generate_asm(n->left, false_label, n->op);
+    freeall_registers();
+
+    generate_asm(n->mid, NOREG, n->op);
+    freeall_registers();
+
+    if (n->right) gen_jump(end_label);
+
+    gen_label(false_label);
+
+    if (n->right) {
+        generate_asm(n->right, NOREG, n->op);
+        freeall_registers();
+        gen_label(end_label);
+    }
+
+    return NOREG;
+}
+
+int generate_asm(struct ASTnode* n, int reg, int parent_op) {
     int leftreg, rightreg;
-    if (n->left) leftreg = generate_asm(n->left, -1);
-    if (n->right) rightreg = generate_asm(n->right, leftreg);
+
+    switch(n->op) {
+        case A_IF: {
+            return generate_if(n);
+        }
+        case A_GLUE: {
+            generate_asm(n->left, NOREG, n->op);
+            freeall_registers();
+            generate_asm(n->right, NOREG, n->op);
+            freeall_registers();
+            return NOREG;
+        }
+    }
+
+    if (n->left) leftreg = generate_asm(n->left, NOREG, n->op);
+    if (n->right) rightreg = generate_asm(n->right, leftreg, n->op);
 
     switch(n->op) {
         case A_ADD: {
@@ -28,23 +72,23 @@ int generate_asm(struct ASTnode* n, int reg) {
         case A_LVIDENT: {
             return gen_store_global_sym(reg, global_sym[n->v.id].name);
         }
-        case A_EQ: {
-            return gen_eq(leftreg, rightreg);
-        }
-        case A_LT: {
-            return gen_less(leftreg, rightreg);
-        }
-        case A_GT: {
-            return gen_greater(leftreg, rightreg);
-        }
-        case A_LE: {
-            return gen_less_eq(leftreg, rightreg);
-        }
-        case A_GE: {
-            return gen_greater_eq(leftreg, rightreg);
-        }
+        case A_EQ:
+        case A_LT:
+        case A_GT:
+        case A_LE:
+        case A_GE:
         case A_NE: {
-            return gen_not_eq(leftreg, rightreg);
+            if (parent_op == A_IF) {
+                return gen_compare_and_jump(n->op, leftreg, rightreg, reg);
+            }
+            else {
+                return gen_compare_and_set(n->op, leftreg, rightreg);
+            }
+        }
+        case A_PRINT: {
+            printint(leftreg);
+            freeall_registers();
+            return NOREG;
         }
         case A_ASSIGN: {
             return rightreg;
@@ -55,16 +99,6 @@ int generate_asm(struct ASTnode* n, int reg) {
         }
     }
 }
-
-/*
-void generate_code(struct ASTnode* n) {
-    int reg;
-    gen_preamble();
-    reg = gen_asm(n);
-    printint(reg);
-    gen_postamble();
-}
-*/
 
 void generate_preamble() {
     gen_preamble();

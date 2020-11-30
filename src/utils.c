@@ -65,3 +65,19 @@ void semi() {
 void ident() {
     match(TOK_IDENT, "identifier");
 }
+
+void l_paren() {
+    match(TOK_LPAREN, "Left paren");
+}
+
+void r_paren() {
+    match(TOK_RPAREN, "Right paren");
+}
+
+void l_brace() {
+    match(TOK_LBRACE, "Left brace");
+}
+
+void r_brace() {
+    match(TOK_RBRACE, "Right brace");
+}

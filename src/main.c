@@ -16,6 +16,8 @@ void init_scanner() {
 
 int main(int argc, char** argv) {
 
+    struct ASTnode* tree;
+
     init_scanner();
 
     in_file = fopen(argv[1], "r");
@@ -32,7 +34,8 @@ int main(int argc, char** argv) {
 
     scan(&current_token);
     generate_preamble();
-    statements();
+    tree = compound_statement();
+    generate_asm(tree, NOREG, 0);
     generate_postamble();
 
     fclose(in_file);
