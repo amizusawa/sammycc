@@ -85,6 +85,12 @@ static int keyword(char* s) {
             }
             break;
         }
+        case 'w': {
+            if (!strcmp(s, "while")) {
+                return TOK_WHILE;
+            }
+            break;
+        }
     }
     return 0;
 }

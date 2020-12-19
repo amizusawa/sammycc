@@ -62,6 +62,26 @@ struct ASTnode* if_statement() {
     return make_node(A_IF, cond_ast, true_ast, false_ast, 0);
 }
 
+struct ASTnode* while_statement() {
+    struct ASTnode *cond_ast, *body_ast;
+
+    match(TOK_WHILE, "while");
+    l_paren();
+
+    cond_ast = bin_expr(0);
+
+    if (cond_ast->op < A_EQ || cond_ast->op > A_NE) {
+        fprintf(stderr, "Bad comparison operator on line %d. \n", line);
+        exit(EXIT_FAILURE);
+    }
+
+    r_paren();
+
+    body_ast = compound_statement();
+
+    return make_node(A_WHILE, cond_ast, NULL, body_ast, 0);
+}
+
 struct ASTnode* compound_statement() {
    
     struct ASTnode* left = NULL;
@@ -91,6 +111,10 @@ struct ASTnode* compound_statement() {
             case TOK_RBRACE: {
                 r_brace();
                 return left;
+            }
+            case TOK_WHILE: {
+                tree = while_statement();
+                break;
             }
             default: {
                 fprintf(stderr, 

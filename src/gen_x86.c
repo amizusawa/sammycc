@@ -142,7 +142,7 @@ int gen_not_eq(int reg1, int reg2) { return gen_compare(reg1, reg2, "setne"); }
 
 //                      A_EQ    A_LT    A_GT    A_LE     A_GE     A_NE
 char* cmp_list[] =     {"sete", "setl", "setg", "setle", "setge", "setne"};
-char* inv_cmp_list[] = {"jne",  "jge",  "jle",  "jgt",   "jlt",   "je"};
+char* inv_cmp_list[] = {"jne",  "jge",  "jle",  "jg",   "jl",   "je"};
 
 int gen_compare_and_set(int op, int reg1, int reg2) {
     if (op < A_EQ || op > A_NE) {

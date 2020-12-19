@@ -31,12 +31,33 @@ int generate_if(struct ASTnode* n) {
     return NOREG;
 }
 
+int generate_while(struct ASTnode* n) {
+    int start_label, end_label;
+
+    start_label = label();
+    end_label = label();
+
+    gen_label(start_label);
+    generate_asm(n->left, end_label, n->op);
+    freeall_registers();
+
+    generate_asm(n->right, NOREG, n->op);
+    freeall_registers();
+
+    gen_jump(start_label);
+    gen_label(end_label);
+    return NOREG;
+}
+
 int generate_asm(struct ASTnode* n, int reg, int parent_op) {
     int leftreg, rightreg;
 
     switch(n->op) {
         case A_IF: {
             return generate_if(n);
+        }
+        case A_WHILE: {
+            return generate_while(n);
         }
         case A_GLUE: {
             generate_asm(n->left, NOREG, n->op);
@@ -78,7 +99,7 @@ int generate_asm(struct ASTnode* n, int reg, int parent_op) {
         case A_LE:
         case A_GE:
         case A_NE: {
-            if (parent_op == A_IF) {
+            if (parent_op == A_IF || parent_op == A_WHILE) {
                 return gen_compare_and_jump(n->op, leftreg, rightreg, reg);
             }
             else {
