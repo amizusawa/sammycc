@@ -35,6 +35,7 @@ enum {
     TOK_IF,
     TOK_ELSE,
     TOK_WHILE,
+    TOK_FOR,
 
     // Identifiers
     TOK_IDENT,
@@ -59,6 +60,7 @@ enum {
     A_GLUE,
     A_IF,
     A_WHILE,
+    A_FOR,
     A_PRINT
 };
 
