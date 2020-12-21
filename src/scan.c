@@ -91,6 +91,12 @@ static int keyword(char* s) {
             }
             break;
         }
+        case 'f': {
+            if (!strcmp(s, "for")) {
+                return TOK_FOR;
+            }
+            break;
+        }
     }
     return 0;
 }
